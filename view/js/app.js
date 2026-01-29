@@ -22,13 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       // Fetch time series data
       const response = await fetch(
-        `/api/measurements?field=${field}&start_date=${startDate}&end_date=${endDate}`,
+        `/api/weather?field=${field}&start_date=${startDate}&end_date=${endDate}`,
       );
       const data = await response.json();
 
       // Fetch metrics
       const metricsResponse = await fetch(
-        `/api/measurements/metrics?field=${field}&start_date=${startDate}&end_date=${endDate}`,
+        `/api/weather/metrics?field=${field}&start_date=${startDate}&end_date=${endDate}`,
       );
       const metrics = await metricsResponse.json();
 
@@ -57,16 +57,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const updateChart = (data, field) => {
     const labels = data.map((d) => new Date(d.timestamp).toLocaleString());
-    const values = data.map((d) => d[field]);
+    const values = data.map((d) => {
+      const parts = field.split(".");
+      return parts.length > 1 ? d[parts[0]][parts[1]] : d[field];
+    });
 
     if (myChart) {
       myChart.destroy();
     }
 
     const fieldLabels = {
-      field1: "Temperature",
-      field2: "Humidity",
-      field3: "Traffic",
+      "main.temp": "Temperature (°C)",
+      "main.humidity": "Humidity (%)",
+      "main.pressure": "Pressure (hPa)",
+      "wind.speed": "Wind Speed (m/s)",
     };
 
     myChart = new Chart(chartCtx, {

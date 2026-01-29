@@ -1,6 +1,6 @@
 const Weather = require("../models/Weather");
 
-exports.getMeasurements = async (req, res) => {
+exports.getWeatherData = async (req, res) => {
   try {
     const { field, start_date, end_date } = req.query;
 
